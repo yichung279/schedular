@@ -1,13 +1,8 @@
+#ifndef QUEUE_H
+#define QUEUE_H
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-typedef struct {
-    char *pid;
-    int priority;
-    int burst;
-    int arrival;
-}Process;
+#include "Process.c"
 
 typedef struct node{
     Process *process;
@@ -20,8 +15,6 @@ typedef struct {
   Node *tail;
 }Queue;
 
-Process *p_new(char *pid, int priority, int burst, int arrival);
-
 Queue *q_new();
 
 void q_free(Queue *q);
@@ -29,3 +22,4 @@ void q_free(Queue *q);
 void q_push(Queue *q, Process *p);
 
 Process *q_pop(Queue *q);
+#endif

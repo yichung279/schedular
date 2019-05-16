@@ -3,18 +3,6 @@
 #include <stdlib.h>
 
 #include "Queue.h"
-Process *p_new(char *pid, int priority, int burst, int arrival){
-    Process *p = malloc(sizeof(Process));
-    if (p == NULL)
-        return NULL;
-
-    p->pid = pid;
-    p->priority = priority;
-    p->burst = burst;
-    p->arrival = arrival;
-
-    return p;
-}
 
 Queue *q_new(){
     Queue *q = malloc(sizeof(Queue));
