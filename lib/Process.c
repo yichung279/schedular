@@ -15,3 +15,6 @@ Process *p_new(char *pid, int priority, int burst, int arrival){
     return p;
 }
 
+void cpu_run(CPU *c) {
+    c->p->burst --;
+}
