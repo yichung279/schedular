@@ -2,10 +2,12 @@
  #define CPU_H
 
 typedef struct {
-    char *pid;
+    char pid[8];
     int priority;
     int burst;
     int arrival;
+    int first_exe_time;
+    int completed_time;
 }Process;
 
 typedef struct {
@@ -14,5 +16,7 @@ typedef struct {
 
 Process *p_new(char *pid, int priority, int burst, int arrival);
 
-void cpu_run(CPU *p);
+CPU *c_new();
+
+bool cpu_run(CPU *c);
 #endif
