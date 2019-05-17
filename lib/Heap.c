@@ -8,13 +8,12 @@
 #define HEAP_SIZE 1000
 
 Heap *h_new() {
-    Heap *h = malloc(sizeof(Heap));
-    h->arr = malloc(HEAP_SIZE * sizeof(Process *));
+    Heap *h = calloc(1, sizeof(Heap));
+    h->arr = calloc(HEAP_SIZE,  sizeof(Process *));
     h->size = HEAP_SIZE;
     h->i_last_ele = 0;
     return h;
 }
-
 
 void h_free(Heap *h) {
     for (int i = 0; i < h->size; i++) free(h->arr[i]);
@@ -25,6 +24,28 @@ void h_swap(Heap *h, int i1, int i2) {
     Process *tmp = h->arr[i1];
     h->arr[i1] = h->arr[i2];
     h->arr[i2] = tmp;
+}
+
+void heapify(Heap *h, int i) {
+    int left =  2*i,
+        right = 2*i + 1,
+        i_min = 0;
+
+    if (h->arr[left]){
+        if (h->arr[left]->burst < h->arr[i]->burst)
+            i_min = left;
+    }
+
+    if (h->arr[right]){
+        if (h->arr[right]->burst < h->arr[left]->burst &&
+            h->arr[right]->burst < h->arr[i]->burst)
+            i_min = right;
+    }
+
+    if (i_min) {
+        h_swap(h, i, i_min);
+        heapify(h, i_min);
+    }
 }
 
 void h_insert(Heap *h, Process *p) {
@@ -41,4 +62,14 @@ void h_insert(Heap *h, Process *p) {
 
         idx = new_idx;
     }
+}
+
+Process *h_extract(Heap *h) {
+    Process *top = h->arr[1];
+    h->arr[1] = h->arr[h->i_last_ele];
+    h->arr[h->i_last_ele] = NULL;
+    h->i_last_ele--;
+
+    heapify(h, 1);
+    return top;
 }

@@ -16,7 +16,9 @@ void h_free(Heap *h);
 
 void h_swap(Heap *h, int i1, int i2);
 
+void heapify(Heap *h, int i);
+
 void h_insert(Heap *h, Process *p);
 
-Process *h_pop(Heap *h);// get + delete
+Process *h_extract(Heap *h);// get + delete
 #endif
