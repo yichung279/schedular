@@ -7,11 +7,12 @@
 
 #define HEAP_SIZE 1000
 
-Heap *h_new() {
+Heap *h_new(int (*compr)(const void *, const void*)) {
     Heap *h = calloc(1, sizeof(Heap));
     h->arr = calloc(HEAP_SIZE,  sizeof(Process *));
     h->size = HEAP_SIZE;
     h->i_last_ele = 0;
+    h->is_smaller = compr;
     return h;
 }
 
@@ -32,13 +33,13 @@ void heapify(Heap *h, int i) {
         i_min = 0;
 
     if (h->arr[left]){
-        if (h->arr[left]->burst < h->arr[i]->burst)
+        if (h->is_smaller(h->arr[left], h->arr[i]))
             i_min = left;
     }
 
     if (h->arr[right]){
-        if (h->arr[right]->burst < h->arr[left]->burst &&
-            h->arr[right]->burst < h->arr[i]->burst)
+        if (h->is_smaller(h->arr[right], h->arr[left]) &&
+            h->is_smaller(h->arr[right], h->arr[i]))
             i_min = right;
     }
 
@@ -57,7 +58,7 @@ void h_insert(Heap *h, Process *p) {
     while (h->arr[idx]) {
         new_idx = (int)floor(idx/2);
         if (0 == new_idx) break;
-        if (h->arr[new_idx]->burst <= h->arr[idx]->burst ) break;
+        if (!h->is_smaller(h->arr[idx], h->arr[new_idx])) break;
         h_swap(h, idx, new_idx);
 
         idx = new_idx;

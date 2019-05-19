@@ -8,9 +8,10 @@ typedef struct{
     Process **arr;
     int size;
     int i_last_ele;
+    int (*is_smaller)(const void *, const void*);
 }Heap;
 
-Heap *h_new();
+Heap *h_new(int (*compr)(const void *, const void*));
 
 void h_free(Heap *h);
 

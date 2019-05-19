@@ -15,6 +15,22 @@ int compare_arrival(const void *a, const void *b){
 	return 1;
 }
 
+int is_smaller_priority(const void *a, const void *b){
+	Process c = *(Process *)a;
+	Process d = *(Process *)b;
+    if (c.priority < d.priority)
+        return 1;
+    return 0;
+}
+
+int is_smaller_burst(const void *a, const void *b){
+	Process c = *(Process *)a;
+	Process d = *(Process *)b;
+    if (c.burst < d.burst)
+        return 1;
+    return 0;
+}
+
 int main(int argc, char* argv[]){
 
     char test_filename[128];
@@ -49,7 +65,7 @@ int main(int argc, char* argv[]){
     /* for(int i = 0; i < n_process; i++) */
     /*     printf("%s %d %d %d\n", process_list[i].pid, process_list[i].priority, process_list[i].burst, process_list[i].arrival); */
 
-    Heap *schedular = h_new();
+    Heap *schedular = h_new(is_smaller_priority);
     CPU *cpu = c_new();
     h_extract(schedular);
 
