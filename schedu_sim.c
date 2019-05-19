@@ -1,9 +1,9 @@
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>
 
-#include "lib/Queue.c"
-#include "lib/Process.h"
+#include "lib/Heap.c"
+#include "lib/Process.c"
 
 int compare_arrival(const void *a, const void *b){
 	Process c = *(Process *)a;
@@ -15,13 +15,37 @@ int compare_arrival(const void *a, const void *b){
 	return 1;
 }
 
+int is_smaller_arrival(const void *a, const void *b){
+	Process c = *(Process *)a;
+	Process d = *(Process *)b;
+    if (c.arrival < d.arrival)
+        return 1;
+    return 0;
+}
+
+int is_smaller_priority(const void *a, const void *b){
+	Process c = *(Process *)a;
+	Process d = *(Process *)b;
+    if (c.priority < d.priority)
+        return 1;
+    return 0;
+}
+
+int is_smaller_burst(const void *a, const void *b){
+	Process c = *(Process *)a;
+	Process d = *(Process *)b;
+    if (c.burst < d.burst)
+        return 1;
+    return 0;
+}
+
 int main(int argc, char* argv[]){
 
     char test_filename[128];
-    strcpy(test_filename, argv[1]);
+    strcpy(test_filename, argv[2]);
     printf("%s\n", test_filename);
 
-    FILE *trace_file = fopen(test_filename, "r");
+    FILE *trace_file = fopen(test_filename, "rb");
     char buf[512];
 
     int n_process = 0;
@@ -45,11 +69,19 @@ int main(int argc, char* argv[]){
         n_process++;
     }
 
-    qsort(process_list, n_process, sizeof(Process), compare_arrival);
+    /* qsort(process_list, n_process, sizeof(Process), compare_arrival); */
     /* for(int i = 0; i < n_process; i++) */
     /*     printf("%s %d %d %d\n", process_list[i].pid, process_list[i].priority, process_list[i].burst, process_list[i].arrival); */
+    Heap *schedular;
+    if (0 == strcmp("fcfs", argv[1]))
+        schedular = h_new(is_smaller_arrival);
+    else if (0 == strcmp("sjf", argv[1]))
+        schedular = h_new(is_smaller_burst);
+    else if (0 == strcmp("pri", argv[1]))
+        schedular = h_new(is_smaller_priority);
+    else
+        exit(1);
 
-    Queue *schedular = q_new();
     CPU *cpu = c_new();
 
     int time = 0;
@@ -57,23 +89,22 @@ int main(int argc, char* argv[]){
     int i_process = 0;
     while (n_completed_process != n_process) {
         if (process_list[i_process].arrival == time) {
-            q_push(schedular, &process_list[i_process]);
+            h_insert(schedular, &process_list[i_process]);
             i_process ++;
         }
 
         if (!cpu->p)  {
-            cpu->p = q_pop(schedular);
-            if(cpu->p) cpu->p->first_exe_time = time;
+            cpu->p = h_extract(schedular);
+            if(cpu->p)
+                cpu->p->first_exe_time = time;
         }
 
 
-        if(1 == cpu_run(cpu)){
-            process_list[n_completed_process].completed_time = time;
-            n_completed_process++;
-        }
-
+        if(1 == cpu_run(cpu, time)) n_completed_process++;
         time++;
     }
+
     for(int i = 0; i < n_process; i++)
         printf("%s %d %d %d\n", process_list[i].pid, process_list[i].arrival, process_list[i].first_exe_time, process_list[i].completed_time);
+    return 0;
 }
