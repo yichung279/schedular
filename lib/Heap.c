@@ -57,7 +57,7 @@ void h_insert(Heap *h, Process *p) {
     while (h->arr[idx]) {
         new_idx = (int)floor(idx/2);
         if (0 == new_idx) break;
-        if (h->arr[new_idx]->burst < h->arr[idx]->burst ) break;
+        if (h->arr[new_idx]->burst <= h->arr[idx]->burst ) break;
         h_swap(h, idx, new_idx);
 
         idx = new_idx;

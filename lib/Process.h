@@ -18,5 +18,5 @@ Process *p_new(char *pid, int priority, int burst, int arrival);
 
 CPU *c_new();
 
-bool cpu_run(CPU *c);
+bool cpu_run(CPU *c, int time);
 #endif

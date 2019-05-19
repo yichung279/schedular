@@ -65,16 +65,13 @@ int main(int argc, char* argv[]){
         if (!cpu->p)  {
             cpu->p = h_extract(schedular);
             if(cpu->p) {
+                printf("%s\n", cpu->p->pid);
                 cpu->p->first_exe_time = time;
             }
         }
 
 
-        if(1 == cpu_run(cpu)){
-            process_list[n_completed_process].completed_time = time;
-            n_completed_process++;
-        }
-
+        if(1 == cpu_run(cpu, time)) n_completed_process++;
         time++;
     }
 
