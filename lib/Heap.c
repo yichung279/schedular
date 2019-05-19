@@ -66,6 +66,7 @@ void h_insert(Heap *h, Process *p) {
 
 Process *h_extract(Heap *h) {
     Process *top = h->arr[1];
+    if (!top) return NULL;
     h->arr[1] = h->arr[h->i_last_ele];
     h->arr[h->i_last_ele] = NULL;
     h->i_last_ele--;
