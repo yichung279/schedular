@@ -5,7 +5,7 @@
 
 #include "Heap.h"
 
-#define HEAP_SIZE 1000
+#define HEAP_SIZE 100000
 
 Heap *h_new(int (*compr)(const void *, const void*)) {
     Heap *h = calloc(1, sizeof(Heap));
