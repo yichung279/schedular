@@ -4,5 +4,5 @@
 
 `$ make test schedular=sjf data=1`
 
-There are 3 schegulars,`fcfs`, `sjf`,and `pri`(priority).
+There are 5 schegulars,`fcfs`, `sjf`, `srtf`, `pri`(priority)and `rr`.
 And, data set from 0~3.
