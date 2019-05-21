@@ -49,7 +49,7 @@ int main(int argc, char* argv[]){
     char buf[512];
 
     int n_process = 0;
-    Process process_list[10000];
+    Process process_list[100000];
     while(fgets(buf, 1000, trace_file) != NULL) {
         char *pch;
 		pch = strtok (buf," ,.-");
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]){
     Heap *schedular;
     if (0 == strcmp("fcfs", argv[1]))
         schedular = h_new(is_smaller_arrival);
-    else if (0 == strcmp("sjf", argv[1]))
+    else if (0 == strcmp("sjf", argv[1]) || 0 == strcmp("srtf", argv[1]))
         schedular = h_new(is_smaller_burst);
     else if (0 == strcmp("pri", argv[1]))
         schedular = h_new(is_smaller_priority);
@@ -96,7 +96,19 @@ int main(int argc, char* argv[]){
         if (!cpu->p)  {
             cpu->p = h_extract(schedular);
             if(cpu->p)
-                cpu->p->first_exe_time = time;
+                cpu->p->first_exe_time = cpu->p->first_exe_time
+                    ? cpu->p->first_exe_time
+                    : time;
+        }else if (0 == strcmp("srtf", argv[1])) {
+            if (schedular->arr[1]) {
+                if (schedular->arr[1]->burst < cpu->p->burst) {
+                    h_insert(schedular, cpu->p);
+                    cpu->p = h_extract(schedular);
+                    cpu->p->first_exe_time = cpu->p->first_exe_time
+                        ? cpu->p->first_exe_time
+                        : time;
+                }
+            }
         }
 
 

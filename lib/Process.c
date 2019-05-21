@@ -30,7 +30,7 @@ bool cpu_run(CPU *c, int time) {// return 1 when c->p complete
     c->p->burst --;
 
     if (0 == c->p->burst) {
-        c->p->completed_time = time;
+        c->p->completed_time = time+1;
         c->p = NULL;
         return 1;
     }
