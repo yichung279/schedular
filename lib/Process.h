@@ -6,6 +6,7 @@ typedef struct {
     int priority;
     int burst;
     int arrival;
+    int first_arrival;
     int first_exe_time;
     int completed_time;
 }Process;

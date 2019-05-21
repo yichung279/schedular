@@ -5,6 +5,8 @@
 #include "lib/Heap.c"
 #include "lib/Process.c"
 
+#define QUANTUM 5
+
 int compare_arrival(const void *a, const void *b){
 	Process c = *(Process *)a;
 	Process d = *(Process *)b;
@@ -62,7 +64,7 @@ int main(int argc, char* argv[]){
             else if (2 == i)
                 process_list[n_process].burst = atoi(pch);
             else if (3 == i)
-                process_list[n_process].arrival = atoi(pch);
+                process_list[n_process].first_arrival = atoi(pch);
             pch = strtok (NULL, " ,.-");
         }
 
@@ -73,7 +75,7 @@ int main(int argc, char* argv[]){
     /* for(int i = 0; i < n_process; i++) */
     /*     printf("%s %d %d %d\n", process_list[i].pid, process_list[i].priority, process_list[i].burst, process_list[i].arrival); */
     Heap *schedular;
-    if (0 == strcmp("fcfs", argv[1]))
+    if (0 == strcmp("fcfs", argv[1]) || 0 == strcmp("rr", argv[1]))
         schedular = h_new(is_smaller_arrival);
     else if (0 == strcmp("sjf", argv[1]) || 0 == strcmp("srtf", argv[1]))
         schedular = h_new(is_smaller_burst);
@@ -87,18 +89,22 @@ int main(int argc, char* argv[]){
     int time = 0;
     int n_completed_process = 0;
     int i_process = 0;
+    int process_run_time = 0;
     while (n_completed_process != n_process) {
-        if (process_list[i_process].arrival == time) {
+        while (process_list[i_process].first_arrival == time) {
+            process_list[i_process].arrival = time;
             h_insert(schedular, &process_list[i_process]);
             i_process ++;
         }
 
         if (!cpu->p)  {
             cpu->p = h_extract(schedular);
-            if(cpu->p)
+            process_run_time = 0;
+            if(cpu->p) {
                 cpu->p->first_exe_time = cpu->p->first_exe_time
                     ? cpu->p->first_exe_time
                     : time;
+            }
         }else if (0 == strcmp("srtf", argv[1])) {
             if (schedular->arr[1]) {
                 if (schedular->arr[1]->burst < cpu->p->burst) {
@@ -109,14 +115,22 @@ int main(int argc, char* argv[]){
                         : time;
                 }
             }
+        }else if (0 == strcmp("rr", argv[1]) && QUANTUM == process_run_time) {
+            cpu->p->arrival = time;
+            h_insert(schedular, cpu->p);
+            cpu->p = h_extract(schedular);
+            process_run_time = 0;
+            cpu->p->first_exe_time = cpu->p->first_exe_time
+                ? cpu->p->first_exe_time
+                : time;
         }
 
-
         if(1 == cpu_run(cpu, time)) n_completed_process++;
+        process_run_time ++;
         time++;
     }
 
     for(int i = 0; i < n_process; i++)
-        printf("%s %d %d %d\n", process_list[i].pid, process_list[i].arrival, process_list[i].first_exe_time, process_list[i].completed_time);
+        printf("%s %d %d %d\n", process_list[i].pid, process_list[i].first_arrival, process_list[i].first_exe_time, process_list[i].completed_time);
     return 0;
 }
