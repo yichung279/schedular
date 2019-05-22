@@ -7,16 +7,7 @@
 
 #define QUANTUM 5
 
-int compare_arrival(const void *a, const void *b){
-	Process c = *(Process *)a;
-	Process d = *(Process *)b;
-	if(c.arrival < d.arrival)
-		return -1;
-	else if (c.arrival == d.arrival)
-		return 0;
-	return 1;
-}
-
+// Passing these functions through function pointers, we compare different parts of process with same schedualr. 
 int is_smaller_arrival(const void *a, const void *b){
 	Process c = *(Process *)a;
 	Process d = *(Process *)b;
@@ -52,6 +43,19 @@ int main(int argc, char* argv[]){
 
     int n_process = 0;
     Process process_list[100000];
+    // structure of Process 
+    // {
+    //      char pid[8];
+    //      int priority;
+    //      int burst;
+    //      // the time when process put in to ready queue  	
+    //      int arrival;
+    //      // the time when process FIRST put in to ready queue  
+    //      int first_arrival;
+    //	    int first_exe_time;
+    //	    int completed_time;
+    // }
+    // read file and save processes in process_list
     while(fgets(buf, 1000, trace_file) != NULL) {
         char *pch;
 		pch = strtok (buf," ,.-");
@@ -71,10 +75,18 @@ int main(int argc, char* argv[]){
         n_process++;
     }
 
-    /* qsort(process_list, n_process, sizeof(Process), compare_arrival); */
-    /* for(int i = 0; i < n_process; i++) */
-    /*     printf("%s %d %d %d\n", process_list[i].pid, process_list[i].priority, process_list[i].burst, process_list[i].arrival); */
+    // Use heap to implement a schedular.
     Heap *schedular;
+    // structure of Heap	
+    // {
+    //     // an array of Processes
+    //     Process **arr;
+    //     int size;      
+    //     int i_last_ele;
+    //     // function pointer comparing arrival, burst, or priority 
+    //     int (*is_smaller)(const void *, const void*);
+    // }
+    // new a schedular with different algorithm
     if (0 == strcmp("fcfs", argv[1]) || 0 == strcmp("rr", argv[1]))
         schedular = h_new(is_smaller_arrival);
     else if (0 == strcmp("sjf", argv[1]) || 0 == strcmp("srtf", argv[1]))
@@ -85,18 +97,24 @@ int main(int argc, char* argv[]){
         exit(1);
 
     CPU *cpu = c_new();
+    // structure of Heap	
+    // {
+    //     Process *p;
+    // }
 
     int time = 0;
     int n_completed_process = 0;
     int i_process = 0;
     int process_run_time = 0;
     while (n_completed_process != n_process) {
-        while (process_list[i_process].first_arrival == time) {
+        // Add all process that arrive at time.
+	while (process_list[i_process].first_arrival == time) {
             process_list[i_process].arrival = time;
             h_insert(schedular, &process_list[i_process]);
             i_process ++;
         }
 
+	// If cpu idle dispatch new process in to cpu 
         if (!cpu->p)  {
             cpu->p = h_extract(schedular);
             process_run_time = 0;
@@ -105,6 +123,7 @@ int main(int argc, char* argv[]){
                     ? cpu->p->first_exe_time
                     : time;
             }
+	// preemptive
         }else if (0 == strcmp("srtf", argv[1])) {
             if (schedular->arr[1]) {
                 if (schedular->arr[1]->burst < cpu->p->burst) {
@@ -115,6 +134,7 @@ int main(int argc, char* argv[]){
                         : time;
                 }
             }
+	// rr
         }else if (0 == strcmp("rr", argv[1]) && QUANTUM == process_run_time) {
             cpu->p->arrival = time;
             h_insert(schedular, cpu->p);
