@@ -7,7 +7,7 @@
 
 #define QUANTUM 5
 
-// Passing these functions through function pointers, we compare different parts of process with same schedualr. 
+// Passing these functions through function pointers, we compare different parts of process with same schedualr.
 int is_smaller_arrival(const void *a, const void *b){
 	Process c = *(Process *)a;
 	Process d = *(Process *)b;
@@ -43,14 +43,14 @@ int main(int argc, char* argv[]){
 
     int n_process = 0;
     Process process_list[100000];
-    // structure of Process 
+    // structure of Process
     // {
     //      char pid[8];
     //      int priority;
     //      int burst;
-    //      // the time when process put in to ready queue  	
+    //      // the time when process put in to ready queue
     //      int arrival;
-    //      // the time when process FIRST put in to ready queue  
+    //      // the time when process FIRST put in to ready queue
     //      int first_arrival;
     //	    int first_exe_time;
     //	    int completed_time;
@@ -77,13 +77,13 @@ int main(int argc, char* argv[]){
 
     // Use heap to implement a schedular.
     Heap *schedular;
-    // structure of Heap	
+    // structure of Heap
     // {
     //     // an array of Processes
     //     Process **arr;
-    //     int size;      
+    //     int size;
     //     int i_last_ele;
-    //     // function pointer comparing arrival, burst, or priority 
+    //     // function pointer comparing arrival, burst, or priority
     //     int (*is_smaller)(const void *, const void*);
     // }
     // new a schedular with different algorithm
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]){
         exit(1);
 
     CPU *cpu = c_new();
-    // structure of Heap	
+    // structure of Heap
     // {
     //     Process *p;
     // }
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]){
             i_process ++;
         }
 
-	// If cpu idle dispatch new process in to cpu 
+	// If cpu idle dispatch new process in to cpu
         if (!cpu->p)  {
             cpu->p = h_extract(schedular);
             process_run_time = 0;
